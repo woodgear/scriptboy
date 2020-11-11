@@ -3,7 +3,14 @@
 # sudo apt install mongo-tools
 # sudo apt install mongo-client
 
-# dump(uri:string,col:string,out:string)
+# drop(uri:string,col:string)
+function drop {
+    local uri=$1
+    local col=$2
+    mongo $uri --eval "db.$col.drop()"
+}
+
+# dump(uri:string,col:string)
 function dump {
     local uri=$1
     local col=$2
@@ -37,6 +44,16 @@ function dump_by_list {
     done
 }
 
+function drop_by_filter {
+    local uri=$1
+    local filter=$2
+    local cols=$(list_col $uri $filter)
+    for col in $cols; do
+        drop $uri $col 
+        echo drop $col
+    done
+}
+
 # dump(uri:string,filter:string,out:string)
 function dump_by_filter {
     local uri=$1
@@ -57,6 +74,9 @@ TO_URL="mongodb://127.0.0.1:27017/b"
 DIR="./out"
 
 
-dump_by_list $FROM_URL "a b c" $DIR
-dump_by_filter $FROM_URL goals $DIR
-load $TO_URL $DIR
+# dump_by_list $FROM_URL "teams users jobs" $DIR
+# dump_by_filter $FROM_URL goals $DIR
+# load $TO_URL $DIR
+# drop_by_filter $FROM_URL goals
+# drop $FROM_URL goals_key_results
+
